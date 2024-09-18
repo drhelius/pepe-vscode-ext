@@ -18,17 +18,17 @@ export function activate(context: vscode.ExtensionContext) {
 		// call kernel-memory API and get response
 		const apiResponse = await callKernelMemory(userQuery);
 
-		// construct chat message with user query and additional context
-		const messages = [
+		// construct a chat message with user query and additional context
+		const chatMessages = [
 			vscode.LanguageModelChatMessage.User("User query: " + userQuery + "\n\nAdditional Context: " + apiResponse.text)
 		];
 		
-		// send request to chat model
-		const chatRequest = await chatModels[0].sendRequest(messages, undefined, token);
+		// send request to chat model and get response
+		const chatResponse = await chatModels[0].sendRequest(chatMessages, undefined, token);
 
 		// stream response to chat
-		for await (const token of chatRequest.text) {
-			response.markdown(token);
+		for await (const chunk of chatResponse.text) {
+			response.markdown(chunk);
 		}
 	});
 
